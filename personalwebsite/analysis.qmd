@@ -4,7 +4,7 @@ title: "Example Analysis"
 
 # **Flight Delay Prediction**
 
-Which airline carriers are most likely to have delayed flights? Which times This analysis intended for air travelers in the U.S., frequent or infrequent, sheds some light on the previous questions using U.S. domestic flight data from 2015. This dataset is from [Kaggle](https://www.kaggle.com/datasets/usdot/flight-delays?select=flights.csv) and was originally produced by the Department of Transportation's Bureau of Transportation Statistics. The original dataset has 5.8 million observations, each one a different flight, and 31 columns with information about the flight including date of flight, carrier, flight status, and reason for possible delay, diversion, or cancellation. To narrow down the data analysis, I filtered the data to only include flights departing from BWI so I can focus the analysis on flight status out of BWI airport. There are 86,079 flight observations out of BWI in 2015.
+In this analysis, I explore what factors characterize delayed flights out of BWI airport. Which airline carriers are most likely to have delayed flights? Are flights more likely to be delayed during certain months? Are there certain airport destinations that have a higher rate of delays from Baltimore compared to other destinations? This analysis intended for air travelers in the U.S., frequent or infrequent, sheds some light on the previous questions using U.S. domestic flight data from 2015. This dataset is from [Kaggle](https://www.kaggle.com/datasets/usdot/flight-delays?select=flights.csv) and was originally produced by the Department of Transportation's Bureau of Transportation Statistics. The original dataset has 5.8 million observations, each one a different flight, and 31 columns with information about the flight including date of flight, carrier, flight status, and reason for possible delay, diversion, or cancellation. To narrow down the data analysis, I filtered the data to only include flights departing from BWI so I can focus the analysis on flight status out of BWI airport. There were 86,079 flight observations out of BWI in 2015.
 
 ```{r}
 #| echo: true
@@ -43,7 +43,7 @@ knitr::kable(
 ```
 
 | Variable            | Description                                                                                                                     |
-|-----------------------|------------------------------------------------|
+|---------------|---------------------------------------------------------|
 | Year                | Year of the Flight Trip                                                                                                         |
 | Month               | Month of the Flight Trip                                                                                                        |
 | Day                 | Day of the Flight Trip                                                                                                          |
@@ -95,6 +95,8 @@ knitr::kable(
 | MQ                       | American Eagle Airlines Inc. |
 | VX                       | Virgin America               |
 
+Which airline carriers are most likely to have delayed flights? Are flights more likely to be delayed during certain months? Are there certain airport destinations that have a higher rate of delays from Baltimore compared to other destinations?
+
 ```{r}
 head(flights_bwi)
 
@@ -119,4 +121,4 @@ flights_bwi %>%
   max(na.rm=T) / 60
 ```
 
-By times of year - each month and then certain periods including thanksgiving and christmas
+By times of year - each month and then certain periods including thanksgiving and Christmas

@@ -1,9 +1,7 @@
 ---
-title: "About"
+title: "About Me"
 ---
 
-About this site
+I am a first year Biostatistics ScM student at the Johns Hopkins University Bloomberg School of Public Health. I graduated from UCLA in June 2024 with a Bachelor of Science in Statistics and Data Science and a Minor in Public Health. While studying at UCLA, I was a student researcher at the UCLA Department of Medicine Statistics Core, in which I assisted a senior statistician in data analysis on patterns in childhood trauma using R. My current interests include using EHR data to make predictions about patient outcome and improve medical practice.
 
-```{r}
-1 + 1
-```
+![](hopkins_logo2.jpeg){width="200"} ![](ucla_logo.jpg){width="358"}

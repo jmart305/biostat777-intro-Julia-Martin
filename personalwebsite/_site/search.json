@@ -1,0 +1,16 @@
+[
+  {
+    "objectID": "index.html",
+    "href": "index.html",
+    "title": "Welcome!",
+    "section": "",
+    "text": "Hi! My name is Julia Martin and I am a first year ScM student in Biostatistics at Johns Hopkins. I’m from California and one of my favorite hobbies is biking. Here is a picture of me biking in Yosemite from the summer!"
+  },
+  {
+    "objectID": "about.html",
+    "href": "about.html",
+    "title": "About Me",
+    "section": "",
+    "text": "I am a first year Biostatistics ScM student at the Johns Hopkins University Bloomberg School of Public Health. I graduated from UCLA in June 2024 with a Bachelor of Science in Statistics and Data Science and a Minor in Public Health. While studying at UCLA, I was a student researcher at the UCLA Department of Medicine Statistics Core, in which I assisted a senior statistician in data analysis on patterns in childhood trauma using R. Her current interests include using EHR data to make predictions about patient outcome and improve medical practice."
+  }
+]

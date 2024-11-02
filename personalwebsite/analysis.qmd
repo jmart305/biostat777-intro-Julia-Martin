@@ -1,5 +1,17 @@
 ---
-title: "Flight Delay Prediction"
+title: "Example Analysis"
 ---
 
+**Flight Delay Prediction**
+
+Which airline carriers are most likely to have delayed flights? Which times This analysis intended for air travelers in the U.S., frequent or infrequent, sheds some light on the previous questions using U.S. domestic flight data from 2015. This dataset is from [Kaggle](https://www.kaggle.com/datasets/usdot/flight-delays?select=flights.csv) and was originally produced by the Department of Transportation's Bureau of Transportation Statistics. The dataset has 5.8 million observations, each one a different flight, and 31 columns with information about the flight including date of flight, carrier, flight status, and reason for possible delay, diversion, or cancellation. Data dictionary can be found here 
+
+
+
+```{r}
+flights <- read.csv("flights.csv")
+dim(flights)
+read.csv("airports.csv")
+read.csv("airlines.csv")
+```
 

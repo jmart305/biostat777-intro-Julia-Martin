@@ -2,16 +2,121 @@
 title: "Example Analysis"
 ---
 
-**Flight Delay Prediction**
+# **Flight Delay Prediction**
 
-Which airline carriers are most likely to have delayed flights? Which times This analysis intended for air travelers in the U.S., frequent or infrequent, sheds some light on the previous questions using U.S. domestic flight data from 2015. This dataset is from [Kaggle](https://www.kaggle.com/datasets/usdot/flight-delays?select=flights.csv) and was originally produced by the Department of Transportation's Bureau of Transportation Statistics. The dataset has 5.8 million observations, each one a different flight, and 31 columns with information about the flight including date of flight, carrier, flight status, and reason for possible delay, diversion, or cancellation. Data dictionary can be found here 
-
-
+Which airline carriers are most likely to have delayed flights? Which times This analysis intended for air travelers in the U.S., frequent or infrequent, sheds some light on the previous questions using U.S. domestic flight data from 2015. This dataset is from [Kaggle](https://www.kaggle.com/datasets/usdot/flight-delays?select=flights.csv) and was originally produced by the Department of Transportation's Bureau of Transportation Statistics. The original dataset has 5.8 million observations, each one a different flight, and 31 columns with information about the flight including date of flight, carrier, flight status, and reason for possible delay, diversion, or cancellation. To narrow down the data analysis, I filtered the data to only include flights departing from BWI so I can focus the analysis on flight status out of BWI airport. There are 86,079 flight observations out of BWI in 2015.
 
 ```{r}
-flights <- read.csv("flights.csv")
-dim(flights)
-read.csv("airports.csv")
-read.csv("airlines.csv")
+#| echo: true
+#| output: false
+
+library(dplyr)
+library(knitr)
+library(ggplot2)
+library(kableExtra)
 ```
 
+```{r}
+#| eval: false
+
+flights <- read.csv("flights.csv") # Read in data
+
+flights.bwi <- flights %>% # Filter by only flights originating from Baltimore
+  filter(ORIGIN_AIRPORT == "BWI")
+write.csv(flights.bwi, "flights_bwi.csv")
+```
+
+```{r}
+flights_bwi <- read.csv("flights_bwi.csv") # Reread in smaller dataset
+airports <- read.csv("airports.csv") # Read in airport and airline data
+airlines <- read.csv("airlines.csv")
+```
+
+# Data Dictionary
+
+```{r}
+#| echo: false
+#| column: margin
+knitr::kable(
+  airlines[1:14, 1:2]
+)
+```
+
+| Variable            | Description                                                                                                                     |
+|-----------------------|------------------------------------------------|
+| Year                | Year of the Flight Trip                                                                                                         |
+| Month               | Month of the Flight Trip                                                                                                        |
+| Day                 | Day of the Flight Trip                                                                                                          |
+| Day_of_Week         | Day of week of the Flight Trip                                                                                                  |
+| Airline             | Airline Identifier (See table in right margin for airline codes)                                                                |
+| Flight_Number       | Flight Identifier                                                                                                               |
+| Tail_Number         | Aircraft Identifier                                                                                                             |
+| Origin_Airport      | Starting Airport (All BWI for this analysis)                                                                                    |
+| Destination_Airport | Destination Airport (See list of airport codes [here](https://www.nationsonline.org/oneworld/IATA_Codes/airport_code_list.htm)) |
+| Scheduled_Departure | Planned Departure Time                                                                                                          |
+| Departure_Time      | Wheel_Off - Taxi_Out                                                                                                            |
+| Departure_Delay     | Total Delay on Departure                                                                                                        |
+| Taxi_Out            | The time duration elapsed between departure from the origin airport gate and wheels off                                         |
+| Wheels_Off          | The time point that the aircraft's wheels leave the ground                                                                      |
+| Scheduled_Time      | Planned time amount needed for the flight trip                                                                                  |
+| Elapsed_Time        | Air_Time +Taxi_In + Taxi_Out                                                                                                    |
+| Air_Time            | The time duration between wheels_off and wheels_on time                                                                         |
+| Distance            | Distance between two airports                                                                                                   |
+| Wheels_On           | The time point that the aircraft's wheels touch on the ground                                                                   |
+| Taxi_In             | The time duration elapsed between wheels-on and gate arrival at the destination airport                                         |
+| Scheduled_Arrival   | Planned arrival time                                                                                                            |
+| Arrival_Time        | Wheels_On + Taxi_In                                                                                                             |
+| Arrival_Delay       | Arrival_Time - Scheduled_Arrival                                                                                                |
+| Diverted            | Aircraft landed on airport that out of schedule                                                                                 |
+| Cancelled           | Flight Cancelled (1 = cancelled)                                                                                                |
+| Cancellation_Reason | Reason for Cancellation of flight: A - Airline/Carrier; B - Weather; C - National Air System; D - Security                      |
+| Air_System_Delay    | Delay caused by air system                                                                                                      |
+| Security_Delay      | Delay caused by security                                                                                                        |
+| Airline_Delay       | Delay caused by the airline                                                                                                     |
+| Late_Aircraft_Delay | Delay caused by aircraft                                                                                                        |
+| Weather_Delay       | Delay caused by weather                                                                                                         |
+
+**Airline** **Codes**
+
+| Airline Code (IATA Code) | Airline                      |
+|--------------------------|------------------------------|
+| UA                       | United Air Lines Inc.        |
+| AA                       | American Airlines Inc.       |
+| US                       | US Airways Inc.              |
+| F9                       | Frontier Airlines Inc.       |
+| B6                       | JetBlue Airways              |
+| OO                       | Skywest Airlines Inc.        |
+| AS                       | Alaska Airlines Inc.         |
+| NK                       | Spirit Air Lines             |
+| WN                       | Southwest Airlines Co.       |
+| DL                       | Delta Air Lines Inc.         |
+| EV                       | Atlantic Southeast Airlines  |
+| HA                       | Hawaiian Airlines Inc.       |
+| MQ                       | American Eagle Airlines Inc. |
+| VX                       | Virgin America               |
+
+```{r}
+head(flights_bwi)
+
+flights_bwi %>% 
+  filter(DEPARTURE_DELAY > 0) %>% 
+  nrow / nrow(flights_bwi)
+
+flights_bwi %>% 
+  filter(DEPARTURE_DELAY > 15) %>% 
+  nrow / nrow(flights_bwi)
+```
+
+48.6% of flights out of BWI in 2015 were delayed. 23.3% of flights out of BWI were delayed more than 15 minutes.
+
+```{r}
+flights_bwi %>% 
+  ggplot(aes(DEPARTURE_DELAY)) +
+  geom_histogram()
+
+flights_bwi %>% 
+  select(DEPARTURE_DELAY) %>% 
+  max(na.rm=T) / 60
+```
+
+By times of year - each month and then certain periods including thanksgiving and christmas

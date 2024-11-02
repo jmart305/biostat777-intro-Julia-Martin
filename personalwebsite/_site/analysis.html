@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>About Me – Julia Martin</title>
+<title>Example Analysis – Julia Martin</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -19,6 +19,40 @@ ul.task-list li input[type="checkbox"] {
   width: 0.8em;
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
 }
 </style>
 
@@ -93,11 +127,11 @@ ul.task-list li input[type="checkbox"] {
 <span class="menu-text">Home</span></a>
   </li>  
   <li class="nav-item">
-    <a class="nav-link active" href="./about.html" aria-current="page"> 
+    <a class="nav-link" href="./about.html"> 
 <span class="menu-text">About Me</span></a>
   </li>  
   <li class="nav-item">
-    <a class="nav-link" href="./analysis.html"> 
+    <a class="nav-link active" href="./analysis.html" aria-current="page"> 
 <span class="menu-text">Example Analysis</span></a>
   </li>  
 </ul>
@@ -111,15 +145,22 @@ ul.task-list li input[type="checkbox"] {
 <div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
 <!-- sidebar -->
 <!-- margin-sidebar -->
-    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar zindex-bottom">
-        
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#flight-delay-prediction" id="toc-flight-delay-prediction" class="nav-link active" data-scroll-target="#flight-delay-prediction"><strong>Flight Delay Prediction</strong></a></li>
+  <li><a href="#data-dictionary" id="toc-data-dictionary" class="nav-link" data-scroll-target="#data-dictionary">Data Dictionary</a></li>
+  </ul>
+</nav>
     </div>
 <!-- main -->
-<main class="content" id="quarto-document-content">
+<main class="content page-columns page-full" id="quarto-document-content">
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title">About Me</h1>
+<h1 class="title">Example Analysis</h1>
 </div>
 
 
@@ -136,10 +177,390 @@ ul.task-list li input[type="checkbox"] {
 </header>
 
 
-<p>I am a first year Biostatistics ScM student at the Johns Hopkins University Bloomberg School of Public Health. I graduated from UCLA in June 2024 with a Bachelor of Science in Statistics and Data Science and a Minor in Public Health. While studying at UCLA, I was a student researcher at the UCLA Department of Medicine Statistics Core, in which I assisted a senior statistician in data analysis on patterns in childhood trauma using R. My current interests include using EHR data to make predictions about patient outcome and improve medical practice.</p>
-<p><img src="hopkins_logo2.jpeg" class="img-fluid" width="200"> <img src="ucla_logo.jpg" class="img-fluid" width="358"></p>
+<section id="flight-delay-prediction" class="level1">
+<h1><strong>Flight Delay Prediction</strong></h1>
+<p>Which airline carriers are most likely to have delayed flights? Which times This analysis intended for air travelers in the U.S., frequent or infrequent, sheds some light on the previous questions using U.S. domestic flight data from 2015. This dataset is from <a href="https://www.kaggle.com/datasets/usdot/flight-delays?select=flights.csv">Kaggle</a> and was originally produced by the Department of Transportation’s Bureau of Transportation Statistics. The original dataset has 5.8 million observations, each one a different flight, and 31 columns with information about the flight including date of flight, carrier, flight status, and reason for possible delay, diversion, or cancellation. To narrow down the data analysis, I filtered the data to only include flights departing from BWI so I can focus the analysis on flight status out of BWI airport. There are 86,079 flight observations out of BWI in 2015.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(dplyr)</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(knitr)</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ggplot2)</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(kableExtra)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>flights <span class="ot">&lt;-</span> <span class="fu">read.csv</span>(<span class="st">"flights.csv"</span>) <span class="co"># Read in data</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>flights.bwi <span class="ot">&lt;-</span> flights <span class="sc">%&gt;%</span> <span class="co"># Filter by only flights originating from Baltimore</span></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(ORIGIN_AIRPORT <span class="sc">==</span> <span class="st">"BWI"</span>)</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a><span class="fu">write.csv</span>(flights.bwi, <span class="st">"flights_bwi.csv"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>flights_bwi <span class="ot">&lt;-</span> <span class="fu">read.csv</span>(<span class="st">"flights_bwi.csv"</span>) <span class="co"># Reread in smaller dataset</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>airports <span class="ot">&lt;-</span> <span class="fu">read.csv</span>(<span class="st">"airports.csv"</span>) <span class="co"># Read in airport and airline data</span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>airlines <span class="ot">&lt;-</span> <span class="fu">read.csv</span>(<span class="st">"airlines.csv"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="data-dictionary" class="level1 page-columns page-full">
+<h1>Data Dictionary</h1>
+<div class="cell page-columns page-full">
+
+<div class="no-row-height column-margin column-container"><div class="cell-output-display">
+<table class="caption-top table table-sm table-striped small">
+<thead>
+<tr class="header">
+<th style="text-align: left;">IATA_CODE</th>
+<th style="text-align: left;">AIRLINE</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">UA</td>
+<td style="text-align: left;">United Air Lines Inc.</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">AA</td>
+<td style="text-align: left;">American Airlines Inc.</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">US</td>
+<td style="text-align: left;">US Airways Inc.</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">F9</td>
+<td style="text-align: left;">Frontier Airlines Inc.</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">B6</td>
+<td style="text-align: left;">JetBlue Airways</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">OO</td>
+<td style="text-align: left;">Skywest Airlines Inc.</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">AS</td>
+<td style="text-align: left;">Alaska Airlines Inc.</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">NK</td>
+<td style="text-align: left;">Spirit Air Lines</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">WN</td>
+<td style="text-align: left;">Southwest Airlines Co.</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">DL</td>
+<td style="text-align: left;">Delta Air Lines Inc.</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">EV</td>
+<td style="text-align: left;">Atlantic Southeast Airlines</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">HA</td>
+<td style="text-align: left;">Hawaiian Airlines Inc.</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">MQ</td>
+<td style="text-align: left;">American Eagle Airlines Inc.</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">VX</td>
+<td style="text-align: left;">Virgin America</td>
+</tr>
+</tbody>
+</table>
+</div></div></div>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Variable</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Year</td>
+<td>Year of the Flight Trip</td>
+</tr>
+<tr class="even">
+<td>Month</td>
+<td>Month of the Flight Trip</td>
+</tr>
+<tr class="odd">
+<td>Day</td>
+<td>Day of the Flight Trip</td>
+</tr>
+<tr class="even">
+<td>Day_of_Week</td>
+<td>Day of week of the Flight Trip</td>
+</tr>
+<tr class="odd">
+<td>Airline</td>
+<td>Airline Identifier (See table below for list of airline codes)</td>
+</tr>
+<tr class="even">
+<td>Flight_Number</td>
+<td>Flight Identifier</td>
+</tr>
+<tr class="odd">
+<td>Tail_Number</td>
+<td>Aircraft Identifier</td>
+</tr>
+<tr class="even">
+<td>Origin_Airport</td>
+<td>Starting Airport (All BWI for this analysis)</td>
+</tr>
+<tr class="odd">
+<td>Destination_Airport</td>
+<td>Destination Airport (See list of airport codes <a href="https://www.nationsonline.org/oneworld/IATA_Codes/airport_code_list.htm">here</a>)</td>
+</tr>
+<tr class="even">
+<td>Scheduled_Departure</td>
+<td>Planned Departure Time</td>
+</tr>
+<tr class="odd">
+<td>Departure_Time</td>
+<td>Wheel_Off - Taxi_Out</td>
+</tr>
+<tr class="even">
+<td>Departure_Delay</td>
+<td>Total Delay on Departure</td>
+</tr>
+<tr class="odd">
+<td>Taxi_Out</td>
+<td>The time duration elapsed between departure from the origin airport gate and wheels off</td>
+</tr>
+<tr class="even">
+<td>Wheels_Off</td>
+<td>The time point that the aircraft’s wheels leave the ground</td>
+</tr>
+<tr class="odd">
+<td>Scheduled_Time</td>
+<td>Planned time amount needed for the flight trip</td>
+</tr>
+<tr class="even">
+<td>Elapsed_Time</td>
+<td>Air_Time +Taxi_In + Taxi_Out</td>
+</tr>
+<tr class="odd">
+<td>Air_Time</td>
+<td>The time duration between wheels_off and wheels_on time</td>
+</tr>
+<tr class="even">
+<td>Distance</td>
+<td>Distance between two airports</td>
+</tr>
+<tr class="odd">
+<td>Wheels_On</td>
+<td>The time point that the aircraft’s wheels touch on the ground</td>
+</tr>
+<tr class="even">
+<td>Taxi_In</td>
+<td>The time duration elapsed between wheels-on and gate arrival at the destination airport</td>
+</tr>
+<tr class="odd">
+<td>Scheduled_Arrival</td>
+<td>Planned arrival time</td>
+</tr>
+<tr class="even">
+<td>Arrival_Time</td>
+<td>Wheels_On + Taxi_In</td>
+</tr>
+<tr class="odd">
+<td>Arrival_Delay</td>
+<td>Arrival_Time - Scheduled_Arrival</td>
+</tr>
+<tr class="even">
+<td>Diverted</td>
+<td>Aircraft landed on airport that out of schedule</td>
+</tr>
+<tr class="odd">
+<td>Cancelled</td>
+<td>Flight Cancelled (1 = cancelled)</td>
+</tr>
+<tr class="even">
+<td>Cancellation_Reason</td>
+<td>Reason for Cancellation of flight: A - Airline/Carrier; B - Weather; C - National Air System; D - Security</td>
+</tr>
+<tr class="odd">
+<td>Air_System_Delay</td>
+<td>Delay caused by air system</td>
+</tr>
+<tr class="even">
+<td>Security_Delay</td>
+<td>Delay caused by security</td>
+</tr>
+<tr class="odd">
+<td>Airline_Delay</td>
+<td>Delay caused by the airline</td>
+</tr>
+<tr class="even">
+<td>Late_Aircraft_Delay</td>
+<td>Delay caused by aircraft</td>
+</tr>
+<tr class="odd">
+<td>Weather_Delay</td>
+<td>Delay caused by weather</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Airline</strong> <strong>Codes</strong></p>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Airline Code (IATA Code)</th>
+<th>Airline</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>UA</td>
+<td>United&nbsp;Air&nbsp;Lines&nbsp;Inc.</td>
+</tr>
+<tr class="even">
+<td>AA</td>
+<td>American&nbsp;Airlines&nbsp;Inc.</td>
+</tr>
+<tr class="odd">
+<td>US</td>
+<td>US&nbsp;Airways&nbsp;Inc.</td>
+</tr>
+<tr class="even">
+<td>F9</td>
+<td>Frontier&nbsp;Airlines&nbsp;Inc.</td>
+</tr>
+<tr class="odd">
+<td>B6</td>
+<td>JetBlue&nbsp;Airways</td>
+</tr>
+<tr class="even">
+<td>OO</td>
+<td>Skywest&nbsp;Airlines&nbsp;Inc.</td>
+</tr>
+<tr class="odd">
+<td>AS</td>
+<td>Alaska&nbsp;Airlines&nbsp;Inc.</td>
+</tr>
+<tr class="even">
+<td>NK</td>
+<td>Spirit&nbsp;Air&nbsp;Lines</td>
+</tr>
+<tr class="odd">
+<td>WN</td>
+<td>Southwest&nbsp;Airlines&nbsp;Co.</td>
+</tr>
+<tr class="even">
+<td>DL</td>
+<td>Delta&nbsp;Air&nbsp;Lines&nbsp;Inc.</td>
+</tr>
+<tr class="odd">
+<td>EV</td>
+<td>Atlantic&nbsp;Southeast&nbsp;Airlines</td>
+</tr>
+<tr class="even">
+<td>HA</td>
+<td>Hawaiian&nbsp;Airlines&nbsp;Inc.</td>
+</tr>
+<tr class="odd">
+<td>MQ</td>
+<td>American&nbsp;Eagle&nbsp;Airlines&nbsp;Inc.</td>
+</tr>
+<tr class="even">
+<td>VX</td>
+<td>Virgin&nbsp;America</td>
+</tr>
+</tbody>
+</table>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(flights_bwi)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>  X YEAR MONTH DAY DAY_OF_WEEK AIRLINE FLIGHT_NUMBER TAIL_NUMBER ORIGIN_AIRPORT
+1 1 2015     1   1           4      AA           233      N3BEAA            BWI
+2 2 2015     1   1           4      DL          1937      N905DA            BWI
+3 3 2015     1   1           4      DL          2234      N970DL            BWI
+4 4 2015     1   1           4      NK           969      N516NK            BWI
+5 5 2015     1   1           4      US          1943      N508AY            BWI
+6 6 2015     1   1           4      NK           301      N626NK            BWI
+  DESTINATION_AIRPORT SCHEDULED_DEPARTURE DEPARTURE_TIME DEPARTURE_DELAY
+1                 MIA                 600            643              43
+2                 DTW                 600            551              -9
+3                 MSP                 625            709              44
+4                 ORD                 625            619              -6
+5                 CLT                 640            637              -3
+6                 FLL                 645            649               4
+  TAXI_OUT WHEELS_OFF SCHEDULED_TIME ELAPSED_TIME AIR_TIME DISTANCE WHEELS_ON
+1       21        704            163          151      124      946       908
+2       18        609            102           92       69      409       718
+3       10        719            171          163      149      936       848
+4       12        631            129          139      116      622       727
+5       22        659             94           95       67      361       806
+6       11        700            157          142      125      925       905
+  TAXI_IN SCHEDULED_ARRIVAL ARRIVAL_TIME ARRIVAL_DELAY DIVERTED CANCELLED
+1       6               843          914            31        0         0
+2       5               742          723           -19        0         0
+3       4               816          852            36        0         0
+4      11               734          738             4        0         0
+5       6               814          812            -2        0         0
+6       6               922          911           -11        0         0
+  CANCELLATION_REASON AIR_SYSTEM_DELAY SECURITY_DELAY AIRLINE_DELAY
+1                                    0              0            31
+2                                   NA             NA            NA
+3                                    0              0            36
+4                                   NA             NA            NA
+5                                   NA             NA            NA
+6                                   NA             NA            NA
+  LATE_AIRCRAFT_DELAY WEATHER_DELAY
+1                   0             0
+2                  NA            NA
+3                   0             0
+4                  NA            NA
+5                  NA            NA
+6                  NA            NA</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>flights_bwi <span class="sc">%&gt;%</span> </span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(DEPARTURE_DELAY <span class="sc">&gt;</span> <span class="dv">0</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>  nrow <span class="sc">/</span> <span class="fu">nrow</span>(flights_bwi)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 0.4863672</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>flights_bwi <span class="sc">%&gt;%</span> </span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(DEPARTURE_DELAY <span class="sc">&gt;</span> <span class="dv">15</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>  nrow <span class="sc">/</span> <span class="fu">nrow</span>(flights_bwi)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 0.2330534</code></pre>
+</div>
+</div>
+<p>48.6% of flights out of BWI in 2015 were delayed. 23.3% of flights out of BWI were delayed more than 15 minutes.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>flights_bwi <span class="sc">%&gt;%</span> </span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(DEPARTURE_DELAY)) <span class="sc">+</span></span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_histogram</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>`stat_bin()` using `bins = 30`. Pick better value with `binwidth`.</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning: Removed 1479 rows containing non-finite outside the scale range
+(`stat_bin()`).</code></pre>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="analysis_files/figure-html/unnamed-chunk-6-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>flights_bwi <span class="sc">%&gt;%</span> </span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(DEPARTURE_DELAY) <span class="sc">%&gt;%</span> </span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">max</span>(<span class="at">na.rm=</span>T) <span class="sc">/</span> <span class="dv">60</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 22.33333</code></pre>
+</div>
+</div>
+<p>By times of year - each month and then certain periods including thanksgiving and christmas</p>
 
 
+</section>
 
 </main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">

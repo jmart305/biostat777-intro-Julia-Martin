@@ -10,7 +10,8 @@ In this analysis, I explore what factors characterize delayed flights out of BWI
 #| echo: true
 #| output: false
 
-library(dplyr)
+library(dplyr) 
+#
 library(knitr)
 library(ggplot2)
 library(kableExtra)

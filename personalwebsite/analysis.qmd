@@ -123,7 +123,7 @@ ggplot(delay_by_airline, aes(fill = as.factor(delay_status), y = length(delay_st
   guides(fill=guide_legend(title="Delay Status")) + 
 scale_fill_manual(labels = c("No", "Yes"), values = c("green4", "orange2")) + 
   theme(title = element_text(family = "Optima"), legend.text = element_text(family = "Optima"), axis.text.x = element_text(family = "Optima"), axis.text.y = element_text(family = "Optima")) + 
-  labs(subtitle = str_wrap("Spirit Airlines and Southwest Airlines have the highest proportion of delayed flights while US Airways has the lowest"), caption = "Figure 1: Flights ranked by delay status")
+  labs(subtitle = str_wrap("Spirit Airlines and Southwest Airlines have the highest proportion of delayed flights while US Airways has the lowest"), caption = "Figure 1: Airlines ranked by delay status")
 ```
 
 ```{r}
@@ -131,11 +131,50 @@ summarized_delays %>%
   filter(AIRLINE != "OO") %>% 
   ggplot(aes(x = reorder(AIRLINE,-total_flights),y = total_flights)) +
   geom_bar(stat = "identity", fill = "green4") + ylab("Total Number of Flights") + xlab("Airline") + ggtitle("Frequency of Flights out of BWI by Airline") +
-  theme(title = element_text(family = "Optima"), legend.text = element_text(family = "Optima"), axis.text.x = element_text(family = "Optima"), axis.text.y = element_text(family = "Optima")) + labs(subtitle = "")
+  theme(title = element_text(family = "Optima"), legend.text = element_text(family = "Optima"), axis.text.x = element_text(family = "Optima"), axis.text.y = element_text(family = "Optima")) + labs(subtitle = "Southwest operated far more flights out of BWI in 2015 compared to other airlines", caption = "Figure 2: Airlines ranked by number of total flights")
 ```
 
-```{r}
+Comparing Figure 1 and Figure 2, we see that Southwest Airlines has both a high proportion of delayed flights but also a large number of flights operating out of BWI. The information from Figure 2 may provide insight to better understand Figure 1. For example, is possible that since BWI is a Southwest hub, this influences the destinations it flies to which could have implications on delays that differ from the other airlines.  
 
+Next, I examined the severity of delays to see if there are any patterns across airlines. I sorted the delayed flights into 4 categories: a short delay of 15-30 minutes, a short-moderate delay of 30 minutes to 1 hour, a moderate delay of 1 to 2 hours, and a long delay of 2+ hours. Faceting by these categories, I made a plot to show the proportion 
+
+```{r}
+delay_by_airline %>% 
+  filter(delay_status == "1") %>% 
+  mutate(delay_category = case_when(
+    DEPARTURE_DELAY > 15 & DEPARTURE_DELAY < 30 ~ "short",
+    DEPARTURE_DELAY >= 30 & DEPARTURE_DELAY < 60 ~ "short/moderate",
+    DEPARTURE_DELAY >= 60 & DEPARTURE_DELAY < 120 ~ "moderate",
+    DEPARTURE_DELAY >= 120 ~ "long"
+  )) 
+
+
+delay_by_airline %>% 
+  group_by(MONTH) %>% 
+  mutate(MONTH = as.factor(MONTH)) %>% 
+  summarize(proportion_delayed = sum(delay_status)/length(MONTH)) %>% 
+  ggplot(aes(x = MONTH, y = proportion_delayed, group = 1)) +
+  geom_path(linetype = "dashed", color = "green4") +
+  geom_point(color = "green4") + 
+  ggtitle ("Proportion of Flights out of BWI Delayed by Month") + 
+  ylab("Proportion Delayed") + xlab("Month") +
+  theme(title = element_text(family = "Optima"), legend.text = element_text(family = "Optima"), axis.text.x = element_text(family = "Optima"), axis.text.y = element_text(family = "Optima")) 
+```
+
+
+15-30 minutes
+30 minutes to 1 hour
+1 to 2 hour
+2+
+
+```{r}
+p <- delay_by_airline 
+ # filter()
+
+ggplot(p,aes(DEPARTURE_DELAY)) +
+  geom_histogram(aes(y = after_stat(count / sum(count)))) +
+  facet_wrap(~MONTH)
+  
 ```
 
 ```{r}

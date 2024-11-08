@@ -44,7 +44,7 @@ knitr::kable(
 ```
 
 | Variable            | Description                                                                                                                     |
-|-----------------------|-------------------------------------------------|
+|-----------------------|------------------------------------------------|
 | Year                | Year of the Flight Trip                                                                                                         |
 | Month               | Month of the Flight Trip                                                                                                        |
 | Day                 | Day of the Flight Trip                                                                                                          |
@@ -134,9 +134,9 @@ summarized_delays %>%
   theme(title = element_text(family = "Optima"), legend.text = element_text(family = "Optima"), axis.text.x = element_text(family = "Optima"), axis.text.y = element_text(family = "Optima")) + labs(subtitle = "Southwest operated far more flights out of BWI in 2015 compared to other airlines", caption = "Figure 2: Airlines ranked by number of total flights")
 ```
 
-Comparing Figure 1 and Figure 2, we see that Southwest Airlines has both a high proportion of delayed flights but also a large number of flights operating out of BWI. The information from Figure 2 may provide insight to better understand Figure 1. For example, is possible that since BWI is a Southwest hub, this influences the destinations it flies to which could have implications on delays that differ from the other airlines.  
+Comparing Figure 1 and Figure 2, we see that Southwest Airlines has both a high proportion of delayed flights but also a large number of flights operating out of BWI. The information from Figure 2 may provide insight to better understand Figure 1. For example, is possible that since BWI is a Southwest hub, this influences the destinations it flies to which could have implications on delays that differ from the other airlines.
 
-Next, I examined the severity of delays to see if there are any patterns across airlines. I sorted the delayed flights into 4 categories: a short delay of 15-30 minutes, a short-moderate delay of 30 minutes to 1 hour, a moderate delay of 1 to 2 hours, and a long delay of 2+ hours. Faceting by these categories, I made a plot to show the proportion 
+Next, I examined the severity of delays to see if there are any patterns across airlines. I sorted the delayed flights into 4 categories: a short delay of 15-30 minutes, a short-moderate delay of 30 minutes to 1 hour, a moderate delay of 1 to 2 hours, and a long delay of 2+ hours. Faceting by these categories, I made a plot to show the proportion
 
 ```{r}
 delay_by_airline %>% 
@@ -158,14 +158,57 @@ delay_by_airline %>%
   geom_point(color = "green4") + 
   ggtitle ("Proportion of Flights out of BWI Delayed by Month") + 
   ylab("Proportion Delayed") + xlab("Month") +
-  theme(title = element_text(family = "Optima"), legend.text = element_text(family = "Optima"), axis.text.x = element_text(family = "Optima"), axis.text.y = element_text(family = "Optima")) 
+  theme(title = element_text(family = "Optima"), legend.text = element_text(family = "Optima"), axis.text.x = element_text(family = "Optima"), axis.text.y = element_text(family = "Optima")) + labs(subtitle = "June and July saw the highest rates of delays out BWI in 2015", caption = "Figure 3: Delay rates by month")
 ```
 
+This line graph shows the trends in delays throughout the year. The highest rate of delay occurred during the summer in June and July (perhaps due to an increase in summer traveling or vacations), while the lowest rates were in April and November. Moderate delay rate occurred from December to March, which was perhaps due to more severe weather events such as snow during the Winter months.
 
-15-30 minutes
-30 minutes to 1 hour
-1 to 2 hour
-2+
+::: callout-caution
+This dataset does not include any observations on flights out of BWI during October 2015 and there is no documentation about this from the data source.
+:::
+
+To further explore that hypothesis, I made a plot showing the proportion of delays each month that were due specifically to weather. 
+
+```{r}
+delay_by_airline %>% 
+  filter(delay_status == 1) %>% 
+  mutate(weather_delay_status = case_when(
+    WEATHER_DELAY < 15 ~ 0,
+    WEATHER_DELAY >= 15 ~ 1,
+    is.na(WEATHER_DELAY) ~ 0
+  )) %>% 
+  group_by(MONTH) %>% 
+  mutate(MONTH = as.factor(MONTH)) %>% 
+  summarize(proportion_delayed = sum(weather_delay_status)/length(MONTH)) %>% 
+  ggplot(aes(x = MONTH, y = proportion_delayed, group = 1)) +
+  geom_path(linetype = "dashed", color = "green4") +
+  geom_point(color = "green4") + 
+  ggtitle ("Proportion of Flights out of BWI Delayed by Month") + 
+  ylab("Proportion Delayed") + xlab("Month") +
+  theme(title = element_text(family = "Optima"), legend.text = element_text(family = "Optima"), axis.text.x = element_text(family = "Optima"), axis.text.y = element_text(family = "Optima")) + labs(subtitle = "June and July saw the highest rates of delays out BWI in 2015", caption = "Figure 3: Delay rates by month")
+```
+
+Interestingly, this graph shows that the month with the highest proportion delays being weather delays is June, so it seems that the delays in the Winter months may be due to a different cause. 
+
+
+
+```{r}
+delay_by_airline %>% 
+  mutate(delay_reason = case_when(
+    
+  ))
+  filter(delay_status == 1) %>% 
+  ggplot(aes(DEPARTURE_DELAY)) +
+  geom_histogram() +
+  facet_wrap(~AIRLINE)
+  
+  
+delay_by_airline %>% 
+  ggplot(aes(AIR_SYSTEM_DELAY)) +
+  geom_histogram()
+```
+
+15-30 minutes 30 minutes to 1 hour 1 to 2 hour 2+
 
 ```{r}
 p <- delay_by_airline 

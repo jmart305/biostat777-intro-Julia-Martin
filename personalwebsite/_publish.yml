@@ -1,0 +1,4 @@
+- source: project
+  quarto-pub:
+    - id: b103da31-4c66-4b0f-8c86-e0baf1d7678f
+      url: 'https://jmart305.quarto.pub/julia-martin'

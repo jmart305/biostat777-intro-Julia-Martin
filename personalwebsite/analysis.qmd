@@ -1,8 +1,8 @@
 ---
-title: "Example Analysis"
+title: "Example Analysis - Flight Delays at BWI"
 ---
 
-# **Flight Delay Prediction**
+![](OG-RouteMap.webp){width="693"}
 
 In this analysis, I explore what factors characterize delayed flights out of BWI airport. Which airline carriers are most likely to have delayed flights? Are flights more likely to be delayed during certain months? Are there certain airport destinations that have a higher rate of delays from Baltimore compared to other destinations? This analysis intended for air travelers in the U.S., frequent or infrequent, sheds some light on the previous questions using U.S. domestic flight data from 2015. This dataset is from [Kaggle](https://www.kaggle.com/datasets/usdot/flight-delays?select=flights.csv) and was originally produced by the Department of Transportation's Bureau of Transportation Statistics. The original dataset has 5.8 million observations, each one a different flight, and 31 columns with information about the flight including date of flight, carrier, flight status, and reason for possible delay, diversion, or cancellation. To narrow down the data analysis, I filtered the data to only include flights departing from BWI so I can focus the analysis on flight status out of BWI airport. There were 86,079 flight observations out of BWI in 2015.
 
@@ -11,7 +11,7 @@ In this analysis, I explore what factors characterize delayed flights out of BWI
 #| output: false
 
 library(dplyr) 
-#
+library(stringr)
 library(knitr)
 library(ggplot2)
 library(kableExtra)
@@ -44,7 +44,7 @@ knitr::kable(
 ```
 
 | Variable            | Description                                                                                                                     |
-|---------------|---------------------------------------------------------|
+|-----------------------|-------------------------------------------------|
 | Year                | Year of the Flight Trip                                                                                                         |
 | Month               | Month of the Flight Trip                                                                                                        |
 | Day                 | Day of the Flight Trip                                                                                                          |
@@ -77,40 +77,66 @@ knitr::kable(
 | Late_Aircraft_Delay | Delay caused by aircraft                                                                                                        |
 | Weather_Delay       | Delay caused by weather                                                                                                         |
 
-**Airline** **Codes**
-
-| Airline Code (IATA Code) | Airline                      |
-|--------------------------|------------------------------|
-| UA                       | United Air Lines Inc.        |
-| AA                       | American Airlines Inc.       |
-| US                       | US Airways Inc.              |
-| F9                       | Frontier Airlines Inc.       |
-| B6                       | JetBlue Airways              |
-| OO                       | Skywest Airlines Inc.        |
-| AS                       | Alaska Airlines Inc.         |
-| NK                       | Spirit Air Lines             |
-| WN                       | Southwest Airlines Co.       |
-| DL                       | Delta Air Lines Inc.         |
-| EV                       | Atlantic Southeast Airlines  |
-| HA                       | Hawaiian Airlines Inc.       |
-| MQ                       | American Eagle Airlines Inc. |
-| VX                       | Virgin America               |
-
 Which airline carriers are most likely to have delayed flights? Are flights more likely to be delayed during certain months? Are there certain airport destinations that have a higher rate of delays from Baltimore compared to other destinations?
 
-```{r}
-head(flights_bwi)
+# Analysis
 
+```{r}
 flights_bwi %>% 
   filter(DEPARTURE_DELAY > 0) %>% 
   nrow / nrow(flights_bwi)
 
-flights_bwi %>% 
-  filter(DEPARTURE_DELAY > 15) %>% 
-  nrow / nrow(flights_bwi)
+delayed <- flights_bwi %>% 
+  filter(DEPARTURE_DELAY > 15) 
+nrow(delayed) / nrow(flights_bwi)
 ```
 
-48.6% of flights out of BWI in 2015 were delayed. 23.3% of flights out of BWI were delayed more than 15 minutes.
+48.6% of flights out of BWI in 2015 were delayed. However, the Federal Aviation Administration defines a delay as a flight that leaves 15 or more minutes late. Using this definition, 23.3% of flights out of BWI were delayed. https://aspm.faa.gov/aspmhelp/index/Types_of_Delay.html
+
+```{r}
+delay_by_airline <- flights_bwi %>% 
+  mutate(delay_status = ifelse(DEPARTURE_DELAY > 15, 1, 0)) %>% 
+  filter(!is.na(delay_status)) 
+
+summarized_delays <- delay_by_airline %>% 
+  group_by(AIRLINE) %>% 
+  summarize(num_delayed_flights = sum(delay_status,na.rm = T), total_flights = n(), proportion_of_flights_delayed = sum(delay_status, na.rm = T)/n()) %>% 
+  arrange(-proportion_of_flights_delayed)
+summarized_delays
+```
+
+This table sorts the airlines by proportion of flights delayed from most to least.
+
+::: callout-note
+Skywest only has one observation in this dataset and it was a delay, so I will remove it from analysis on which airlines have the highest rate of delay since it skews the results.
+:::
+
+```{r}
+delay_by_airline <- delay_by_airline %>% 
+  filter(AIRLINE != "OO") %>% 
+  mutate(AIRLINE = reorder(AIRLINE, -delay_status))
+
+ggplot(delay_by_airline, aes(fill = as.factor(delay_status), y = length(delay_status), x = AIRLINE)) + 
+  geom_bar(position="fill", stat="identity") + ggtitle("Proportion of Flights Delayed out of BWI by Airline") + 
+  xlab("Airline") + 
+  ylab("Proportion of Flights Delayed") + 
+  guides(fill=guide_legend(title="Delay Status")) + 
+scale_fill_manual(labels = c("No", "Yes"), values = c("green4", "orange2")) + 
+  theme(title = element_text(family = "Optima"), legend.text = element_text(family = "Optima"), axis.text.x = element_text(family = "Optima"), axis.text.y = element_text(family = "Optima")) + 
+  labs(subtitle = str_wrap("Spirit Airlines and Southwest Airlines have the highest proportion of delayed flights while US Airways has the lowest"), caption = "Figure 1: Flights ranked by delay status")
+```
+
+```{r}
+summarized_delays %>% 
+  filter(AIRLINE != "OO") %>% 
+  ggplot(aes(x = reorder(AIRLINE,-total_flights),y = total_flights)) +
+  geom_bar(stat = "identity", fill = "green4") + ylab("Total Number of Flights") + xlab("Airline") + ggtitle("Frequency of Flights out of BWI by Airline") +
+  theme(title = element_text(family = "Optima"), legend.text = element_text(family = "Optima"), axis.text.x = element_text(family = "Optima"), axis.text.y = element_text(family = "Optima")) + labs(subtitle = "")
+```
+
+```{r}
+
+```
 
 ```{r}
 flights_bwi %>% 
@@ -123,3 +149,14 @@ flights_bwi %>%
 ```
 
 By times of year - each month and then certain periods including thanksgiving and Christmas
+
+## Functions Used
+
+**dplyr:**
+
+filter()\
+mutate()\
+group_by()\
+summarize()\
+arrange()\
+n()

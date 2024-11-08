@@ -1,10 +1,17 @@
 ---
 title: "Example Analysis - Flight Delays at BWI"
+bibliography: my-refs.bib
 ---
 
 ![](OG-RouteMap.webp){width="693"}
 
-In this analysis, I explore what factors characterize delayed flights out of BWI airport. Which airline carriers are most likely to have delayed flights? Are flights more likely to be delayed during certain months? Are there certain airport destinations that have a higher rate of delays from Baltimore compared to other destinations? This analysis intended for air travelers in the U.S., frequent or infrequent, sheds some light on the previous questions using U.S. domestic flight data from 2015. This dataset is from [Kaggle](https://www.kaggle.com/datasets/usdot/flight-delays?select=flights.csv) and was originally produced by the Department of Transportation's Bureau of Transportation Statistics. The original dataset has 5.8 million observations, each one a different flight, and 31 columns with information about the flight including date of flight, carrier, flight status, and reason for possible delay, diversion, or cancellation. To narrow down the data analysis, I filtered the data to only include flights departing from BWI so I can focus the analysis on flight status out of BWI airport. There were 86,079 flight observations out of BWI in 2015.
+[@image]
+
+In this analysis, I explore what factors characterize delayed flights out of BWI airport. Which airline carriers are most likely to have delayed flights? Are flights more likely to be delayed during certain months? Are there any associations between flight time and length of delay? This analysis intended for air travelers in the U.S., frequent or infrequent, sheds some light on the previous questions using U.S. domestic flight data from 2015. This dataset is from [Kaggle](https://www.kaggle.com/datasets/usdot/flight-delays?select=flights.csv) [@Kaggle_dataset] and was originally produced by the Department of Transportation's Bureau of Transportation Statistics. The original dataset has 5.8 million observations, each one a different flight, and 31 columns with information about the flight including date of flight, carrier, flight status, and reason for possible delay, diversion, or cancellation. To narrow down the data analysis, I filtered the data to only include flights departing from BWI so I can focus the analysis on flight status out of BWI airport. There were 86,079 flight observations out of BWI in 2015.
+
+::: callout-note
+The original dataset is very large so I did not upload it to the GitHub repository. Instead, I filtered the dataset by flights outgoing from BWI only and uploaded that subset to my GitHub repository for this website (called flights_bwi.csv). I wrote code below showing how I filtered the originaly dataset, but for reproducing this code, please begin by readings in flights_bwi.csv, not flights.csv.
+:::
 
 ```{r}
 #| echo: true
@@ -43,39 +50,39 @@ knitr::kable(
 )
 ```
 
-| Variable            | Description                                                                                                                     |
-|-----------------------|------------------------------------------------|
-| Year                | Year of the Flight Trip                                                                                                         |
-| Month               | Month of the Flight Trip                                                                                                        |
-| Day                 | Day of the Flight Trip                                                                                                          |
-| Day_of_Week         | Day of week of the Flight Trip                                                                                                  |
-| Airline             | Airline Identifier (See table in right margin for airline codes)                                                                |
-| Flight_Number       | Flight Identifier                                                                                                               |
-| Tail_Number         | Aircraft Identifier                                                                                                             |
-| Origin_Airport      | Starting Airport (All BWI for this analysis)                                                                                    |
-| Destination_Airport | Destination Airport (See list of airport codes [here](https://www.nationsonline.org/oneworld/IATA_Codes/airport_code_list.htm)) |
-| Scheduled_Departure | Planned Departure Time                                                                                                          |
-| Departure_Time      | Wheel_Off - Taxi_Out                                                                                                            |
-| Departure_Delay     | Total Delay on Departure                                                                                                        |
-| Taxi_Out            | The time duration elapsed between departure from the origin airport gate and wheels off                                         |
-| Wheels_Off          | The time point that the aircraft's wheels leave the ground                                                                      |
-| Scheduled_Time      | Planned time amount needed for the flight trip                                                                                  |
-| Elapsed_Time        | Air_Time +Taxi_In + Taxi_Out                                                                                                    |
-| Air_Time            | The time duration between wheels_off and wheels_on time                                                                         |
-| Distance            | Distance between two airports                                                                                                   |
-| Wheels_On           | The time point that the aircraft's wheels touch on the ground                                                                   |
-| Taxi_In             | The time duration elapsed between wheels-on and gate arrival at the destination airport                                         |
-| Scheduled_Arrival   | Planned arrival time                                                                                                            |
-| Arrival_Time        | Wheels_On + Taxi_In                                                                                                             |
-| Arrival_Delay       | Arrival_Time - Scheduled_Arrival                                                                                                |
-| Diverted            | Aircraft landed on airport that out of schedule                                                                                 |
-| Cancelled           | Flight Cancelled (1 = cancelled)                                                                                                |
-| Cancellation_Reason | Reason for Cancellation of flight: A - Airline/Carrier; B - Weather; C - National Air System; D - Security                      |
-| Air_System_Delay    | Delay caused by air system                                                                                                      |
-| Security_Delay      | Delay caused by security                                                                                                        |
-| Airline_Delay       | Delay caused by the airline                                                                                                     |
-| Late_Aircraft_Delay | Delay caused by aircraft                                                                                                        |
-| Weather_Delay       | Delay caused by weather                                                                                                         |
+| Variable            | Description                                                                                                                                      |
+|--------------------------|----------------------------------------------|
+| Year                | Year of the Flight Trip                                                                                                                          |
+| Month               | Month of the Flight Trip                                                                                                                         |
+| Day                 | Day of the Flight Trip                                                                                                                           |
+| Day_of_Week         | Day of week of the Flight Trip                                                                                                                   |
+| Airline             | Airline Identifier (See table in right margin for airline codes)                                                                                 |
+| Flight_Number       | Flight Identifier                                                                                                                                |
+| Tail_Number         | Aircraft Identifier                                                                                                                              |
+| Origin_Airport      | Starting Airport (All BWI for this analysis)                                                                                                     |
+| Destination_Airport | Destination Airport (See list of airport codes [here](https://www.nationsonline.org/oneworld/IATA_Codes/airport_code_list.htm) [@airport_codes]) |
+| Scheduled_Departure | Planned Departure Time                                                                                                                           |
+| Departure_Time      | Wheel_Off - Taxi_Out                                                                                                                             |
+| Departure_Delay     | Total Delay on Departure                                                                                                                         |
+| Taxi_Out            | The time duration elapsed between departure from the origin airport gate and wheels off                                                          |
+| Wheels_Off          | The time point that the aircraft's wheels leave the ground                                                                                       |
+| Scheduled_Time      | Planned time amount needed for the flight trip                                                                                                   |
+| Elapsed_Time        | Air_Time +Taxi_In + Taxi_Out                                                                                                                     |
+| Air_Time            | The time duration between wheels_off and wheels_on time                                                                                          |
+| Distance            | Distance between two airports                                                                                                                    |
+| Wheels_On           | The time point that the aircraft's wheels touch on the ground                                                                                    |
+| Taxi_In             | The time duration elapsed between wheels-on and gate arrival at the destination airport                                                          |
+| Scheduled_Arrival   | Planned arrival time                                                                                                                             |
+| Arrival_Time        | Wheels_On + Taxi_In                                                                                                                              |
+| Arrival_Delay       | Arrival_Time - Scheduled_Arrival                                                                                                                 |
+| Diverted            | Aircraft landed on airport that out of schedule                                                                                                  |
+| Cancelled           | Flight Cancelled (1 = cancelled)                                                                                                                 |
+| Cancellation_Reason | Reason for Cancellation of flight: A - Airline/Carrier; B - Weather; C - National Air System; D - Security                                       |
+| Air_System_Delay    | Delay caused by air system                                                                                                                       |
+| Security_Delay      | Delay caused by security                                                                                                                         |
+| Airline_Delay       | Delay caused by the airline                                                                                                                      |
+| Late_Aircraft_Delay | Delay caused by aircraft                                                                                                                         |
+| Weather_Delay       | Delay caused by weather                                                                                                                          |
 
 Which airline carriers are most likely to have delayed flights? Are flights more likely to be delayed during certain months? Are there certain airport destinations that have a higher rate of delays from Baltimore compared to other destinations?
 
@@ -91,7 +98,7 @@ delayed <- flights_bwi %>%
 nrow(delayed) / nrow(flights_bwi)
 ```
 
-48.6% of flights out of BWI in 2015 were delayed. However, the Federal Aviation Administration defines a delay as a flight that leaves 15 or more minutes late. Using this definition, 23.3% of flights out of BWI were delayed. https://aspm.faa.gov/aspmhelp/index/Types_of_Delay.html
+48.6% of flights out of BWI in 2015 were delayed. However, the Federal Aviation Administration defines a delay as a flight that leaves 15 or more minutes late. [@delay_def] Using this definition, 23.3% of flights out of BWI were delayed.
 
 ```{r}
 delay_by_airline <- flights_bwi %>% 
@@ -136,19 +143,7 @@ summarized_delays %>%
 
 Comparing Figure 1 and Figure 2, we see that Southwest Airlines has both a high proportion of delayed flights but also a large number of flights operating out of BWI. The information from Figure 2 may provide insight to better understand Figure 1. For example, is possible that since BWI is a Southwest hub, this influences the destinations it flies to which could have implications on delays that differ from the other airlines.
 
-Next, I examined the severity of delays to see if there are any patterns across airlines. I sorted the delayed flights into 4 categories: a short delay of 15-30 minutes, a short-moderate delay of 30 minutes to 1 hour, a moderate delay of 1 to 2 hours, and a long delay of 2+ hours. Faceting by these categories, I made a plot to show the proportion
-
 ```{r}
-delay_by_airline %>% 
-  filter(delay_status == "1") %>% 
-  mutate(delay_category = case_when(
-    DEPARTURE_DELAY > 15 & DEPARTURE_DELAY < 30 ~ "short",
-    DEPARTURE_DELAY >= 30 & DEPARTURE_DELAY < 60 ~ "short/moderate",
-    DEPARTURE_DELAY >= 60 & DEPARTURE_DELAY < 120 ~ "moderate",
-    DEPARTURE_DELAY >= 120 ~ "long"
-  )) 
-
-
 delay_by_airline %>% 
   group_by(MONTH) %>% 
   mutate(MONTH = as.factor(MONTH)) %>% 
@@ -167,7 +162,7 @@ This line graph shows the trends in delays throughout the year. The highest rate
 This dataset does not include any observations on flights out of BWI during October 2015 and there is no documentation about this from the data source.
 :::
 
-To further explore that hypothesis, I made a plot showing the proportion of delays each month that were due specifically to weather. 
+To further explore that hypothesis, I made a plot showing the proportion of delays each month that were due specifically to weather.
 
 ```{r}
 delay_by_airline %>% 
@@ -183,56 +178,40 @@ delay_by_airline %>%
   ggplot(aes(x = MONTH, y = proportion_delayed, group = 1)) +
   geom_path(linetype = "dashed", color = "green4") +
   geom_point(color = "green4") + 
-  ggtitle ("Proportion of Flights out of BWI Delayed by Month") + 
+  ggtitle ("Proportion of Delayed Flights due to Weather out of BWI by Month") + 
   ylab("Proportion Delayed") + xlab("Month") +
-  theme(title = element_text(family = "Optima"), legend.text = element_text(family = "Optima"), axis.text.x = element_text(family = "Optima"), axis.text.y = element_text(family = "Optima")) + labs(subtitle = "June and July saw the highest rates of delays out BWI in 2015", caption = "Figure 3: Delay rates by month")
+  theme(title = element_text(family = "Optima"), legend.text = element_text(family = "Optima"), axis.text.x = element_text(family = "Optima"), axis.text.y = element_text(family = "Optima")) + labs(subtitle = "June had the highest proportion of delays due to weather out of any month", caption = "Figure 4: Delay rates due to weather by month")
 ```
 
-Interestingly, this graph shows that the month with the highest proportion delays being weather delays is June, so it seems that the delays in the Winter months may be due to a different cause. 
+Interestingly, this graph shows that the month with the highest proportion delays being weather delays is June, so it seems that the delays in the Winter months may be due to a different cause.
 
-
+Lastly, I explored potential relationship between length or delay and length of outgoing flight. To do so, I split up the delayed flights into 4 categories: a short delay of 15-30 minutes, a short-moderate delay of 30 minutes to 1 hour, a moderate delay of 1 to 2 hours, and a long delay of 2+ hours. Faceting by these categories, I made a histograms to show the distribution of flight time.
 
 ```{r}
-delay_by_airline %>% 
-  mutate(delay_reason = case_when(
-    
-  ))
-  filter(delay_status == 1) %>% 
-  ggplot(aes(DEPARTURE_DELAY)) +
-  geom_histogram() +
-  facet_wrap(~AIRLINE)
-  
-  
-delay_by_airline %>% 
-  ggplot(aes(AIR_SYSTEM_DELAY)) +
-  geom_histogram()
+suppressWarnings(delay_by_airline %>% 
+  filter(delay_status == "1") %>% 
+  mutate(delay_category = case_when(
+    DEPARTURE_DELAY > 15 & DEPARTURE_DELAY < 30 ~ "Short",
+    DEPARTURE_DELAY >= 30 & DEPARTURE_DELAY < 60 ~ "Short/Moderate",
+    DEPARTURE_DELAY >= 60 & DEPARTURE_DELAY < 120 ~ "Moderate",
+    DEPARTURE_DELAY >= 120 ~ "Long"
+  )) %>% 
+  mutate(delay_category = factor(delay_category, levels = c("Short", "Short/Moderate", "Moderate", "Long"))) %>% 
+  ggplot(aes(x = AIR_TIME, group = delay_category)) +
+  geom_histogram(aes(y= after_stat(width*density)), fill = "green4", bins = 35) +
+  facet_wrap(~delay_category) + xlab("Air Time (Minutes)") + 
+  ylab("Density") + 
+  ggtitle("Distribution of Flight Time Categorized by Length of Delay") + 
+  theme(title = element_text(family = "Optima"), legend.text = element_text(family = "Optima"), axis.text.x = element_text(family = "Optima"), axis.text.y = element_text(family = "Optima"), strip.text.x = element_text(family = "Optima")) + labs(subtitle = str_wrap("Delayed flights with shorter delays had higher density of shorter flight times Short = 15-30 min delay, Short/Moderate = 30 min-1 hour delay,      Moderate = 1-2 hour delay, Long = 2+ hour delay", width = 80), caption = "Figure 5: Distribution of flight time by length of delay"))
 ```
 
-15-30 minutes 30 minutes to 1 hour 1 to 2 hour 2+
+This faceted plot shows that the distributions of flight time for the shorter delays are slightly more right skewed compared to the longer delays. This suggests that flights with shorter delays are more likely to be shorter flights. Perhaps a more informative way to explore this trend would be to reverse the conditional probability and look at the distribution of delay time based on flight time. However, making visual aids for this type of analysis is difficult because there are some observations with extremely high delay times that make constructing histograms difficult and/or not very informative. For this reason, splitting up delay times into categories as I did here helps account for that.
 
-```{r}
-p <- delay_by_airline 
- # filter()
+# Summary
 
-ggplot(p,aes(DEPARTURE_DELAY)) +
-  geom_histogram(aes(y = after_stat(count / sum(count)))) +
-  facet_wrap(~MONTH)
-  
-```
+Overall, there are definitely factors that influence delayed flights out of BWI. There are clearly trends in which airlines have more delays than others, with Southwest and Spirit being the airlines with the highest rates of delay out BWI. There is also a temporal relationship, and travelers should be prepared for a higher chance of flight delay in June and July compared to other times of year. There also seems to be an association between length of delay and length of flight, of the flights that were delayed. Among delayed flights, it seems that shorter delays were associated with shorter flights. For future analysis, it would be useful to further investigate why this dataset does not include data on October of 2015. It would also be useful to investigate the other causes of delay besides weather delay that were included in the dataset.
 
-```{r}
-flights_bwi %>% 
-  ggplot(aes(DEPARTURE_DELAY)) +
-  geom_histogram()
-
-flights_bwi %>% 
-  select(DEPARTURE_DELAY) %>% 
-  max(na.rm=T) / 60
-```
-
-By times of year - each month and then certain periods including thanksgiving and Christmas
-
-## Functions Used
+# Functions Used
 
 **dplyr:**
 
@@ -241,4 +220,15 @@ mutate()\
 group_by()\
 summarize()\
 arrange()\
-n()
+n()\
+case_when()\
+
+**ggplot:** ggplot()\
+geom_bar()\
+geom_path()\
+geom_point()\
+geom_histogram()\
+facet_wrap()\
+theme()\
+
+# References

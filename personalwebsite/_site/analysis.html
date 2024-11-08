@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>Example Analysis – Julia Martin</title>
+<title>Example Analysis - Flight Delays at BWI – Julia Martin</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -54,7 +54,27 @@ div.sourceCode
 @media screen {
 pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
 }
-</style>
+/* CSS for citations */
+div.csl-bib-body { }
+div.csl-entry {
+  clear: both;
+  margin-bottom: 0em;
+}
+.hanging-indent div.csl-entry {
+  margin-left:2em;
+  text-indent:-2em;
+}
+div.csl-left-margin {
+  min-width:2em;
+  float:left;
+}
+div.csl-right-inline {
+  margin-left:2em;
+  padding-left:1em;
+}
+div.csl-indent {
+  margin-left: 2em;
+}</style>
 
 
 <script src="site_libs/quarto-nav/quarto-nav.js"></script>
@@ -132,7 +152,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   </li>  
   <li class="nav-item">
     <a class="nav-link active" href="./analysis.html" aria-current="page"> 
-<span class="menu-text">Example Analysis</span></a>
+<span class="menu-text">Example Analysis - Flight Delays at BWI</span></a>
   </li>  
 </ul>
           </div> <!-- /navcollapse -->
@@ -150,8 +170,13 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <h2 id="toc-title">On this page</h2>
    
   <ul>
-  <li><a href="#flight-delay-prediction" id="toc-flight-delay-prediction" class="nav-link active" data-scroll-target="#flight-delay-prediction"><strong>Flight Delay Prediction</strong></a></li>
-  <li><a href="#data-dictionary" id="toc-data-dictionary" class="nav-link" data-scroll-target="#data-dictionary">Data Dictionary</a></li>
+  <li><a href="#data-dictionary" id="toc-data-dictionary" class="nav-link active" data-scroll-target="#data-dictionary">Data Dictionary</a></li>
+  <li><a href="#analysis" id="toc-analysis" class="nav-link" data-scroll-target="#analysis">Analysis</a></li>
+  <li><a href="#summary" id="toc-summary" class="nav-link" data-scroll-target="#summary">Summary</a>
+  <ul class="collapse">
+  <li><a href="#functions-used" id="toc-functions-used" class="nav-link" data-scroll-target="#functions-used">Functions Used</a></li>
+  </ul></li>
+  <li><a href="#references" id="toc-references" class="nav-link" data-scroll-target="#references">References</a></li>
   </ul>
 </nav>
     </div>
@@ -160,7 +185,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title">Example Analysis</h1>
+<h1 class="title">Example Analysis - Flight Delays at BWI</h1>
 </div>
 
 
@@ -177,14 +202,28 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </header>
 
 
-<section id="flight-delay-prediction" class="level1">
-<h1><strong>Flight Delay Prediction</strong></h1>
-<p>Which airline carriers are most likely to have delayed flights? Which times This analysis intended for air travelers in the U.S., frequent or infrequent, sheds some light on the previous questions using U.S. domestic flight data from 2015. This dataset is from <a href="https://www.kaggle.com/datasets/usdot/flight-delays?select=flights.csv">Kaggle</a> and was originally produced by the Department of Transportation’s Bureau of Transportation Statistics. The original dataset has 5.8 million observations, each one a different flight, and 31 columns with information about the flight including date of flight, carrier, flight status, and reason for possible delay, diversion, or cancellation. To narrow down the data analysis, I filtered the data to only include flights departing from BWI so I can focus the analysis on flight status out of BWI airport. There are 86,079 flight observations out of BWI in 2015.</p>
+<p><img src="OG-RouteMap.webp" class="img-fluid" width="693"></p>
+<p><span class="citation" data-cites="image">(<a href="#ref-image" role="doc-biblioref">Airport 2024</a>)</span></p>
+<p>In this analysis, I explore what factors characterize delayed flights out of BWI airport. Which airline carriers are most likely to have delayed flights? Are flights more likely to be delayed during certain months? Are there any associations between flight time and length of delay? This analysis intended for air travelers in the U.S., frequent or infrequent, sheds some light on the previous questions using U.S. domestic flight data from 2015. This dataset is from <a href="https://www.kaggle.com/datasets/usdot/flight-delays?select=flights.csv">Kaggle</a> <span class="citation" data-cites="Kaggle_dataset">(<a href="#ref-Kaggle_dataset" role="doc-biblioref">Transportation 2016</a>)</span> and was originally produced by the Department of Transportation’s Bureau of Transportation Statistics. The original dataset has 5.8 million observations, each one a different flight, and 31 columns with information about the flight including date of flight, carrier, flight status, and reason for possible delay, diversion, or cancellation. To narrow down the data analysis, I filtered the data to only include flights departing from BWI so I can focus the analysis on flight status out of BWI airport. There were 86,079 flight observations out of BWI in 2015.</p>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>The original dataset is very large so I did not upload it to the GitHub repository. Instead, I filtered the dataset by flights outgoing from BWI only and uploaded that subset to my GitHub repository for this website (called flights_bwi.csv). I wrote code below showing how I filtered the originaly dataset, but for reproducing this code, please begin by readings in flights_bwi.csv, not flights.csv.</p>
+</div>
+</div>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(dplyr)</span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(knitr)</span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ggplot2)</span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(kableExtra)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(dplyr) </span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(stringr)</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(knitr)</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ggplot2)</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(kableExtra)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>flights <span class="ot">&lt;-</span> <span class="fu">read.csv</span>(<span class="st">"flights.csv"</span>) <span class="co"># Read in data</span></span>
@@ -198,7 +237,6 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>airports <span class="ot">&lt;-</span> <span class="fu">read.csv</span>(<span class="st">"airports.csv"</span>) <span class="co"># Read in airport and airline data</span></span>
 <span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>airlines <span class="ot">&lt;-</span> <span class="fu">read.csv</span>(<span class="st">"airlines.csv"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-</section>
 <section id="data-dictionary" class="level1 page-columns page-full">
 <h1>Data Dictionary</h1>
 <div class="cell page-columns page-full">
@@ -297,7 +335,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </tr>
 <tr class="odd">
 <td>Airline</td>
-<td>Airline Identifier (See table below for list of airline codes)</td>
+<td>Airline Identifier (See table in right margin for airline codes)</td>
 </tr>
 <tr class="even">
 <td>Flight_Number</td>
@@ -313,7 +351,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </tr>
 <tr class="odd">
 <td>Destination_Airport</td>
-<td>Destination Airport (See list of airport codes <a href="https://www.nationsonline.org/oneworld/IATA_Codes/airport_code_list.htm">here</a>)</td>
+<td>Destination Airport (See list of airport codes <a href="https://www.nationsonline.org/oneworld/IATA_Codes/airport_code_list.htm">here</a> <span class="citation" data-cites="airport_codes">(<a href="#ref-airport_codes" role="doc-biblioref">NationsOnline, n.d.</a>)</span>)</td>
 </tr>
 <tr class="even">
 <td>Scheduled_Departure</td>
@@ -405,164 +443,245 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </tr>
 </tbody>
 </table>
-<p><strong>Airline</strong> <strong>Codes</strong></p>
-<table class="caption-top table">
-<thead>
-<tr class="header">
-<th>Airline Code (IATA Code)</th>
-<th>Airline</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td>UA</td>
-<td>United&nbsp;Air&nbsp;Lines&nbsp;Inc.</td>
-</tr>
-<tr class="even">
-<td>AA</td>
-<td>American&nbsp;Airlines&nbsp;Inc.</td>
-</tr>
-<tr class="odd">
-<td>US</td>
-<td>US&nbsp;Airways&nbsp;Inc.</td>
-</tr>
-<tr class="even">
-<td>F9</td>
-<td>Frontier&nbsp;Airlines&nbsp;Inc.</td>
-</tr>
-<tr class="odd">
-<td>B6</td>
-<td>JetBlue&nbsp;Airways</td>
-</tr>
-<tr class="even">
-<td>OO</td>
-<td>Skywest&nbsp;Airlines&nbsp;Inc.</td>
-</tr>
-<tr class="odd">
-<td>AS</td>
-<td>Alaska&nbsp;Airlines&nbsp;Inc.</td>
-</tr>
-<tr class="even">
-<td>NK</td>
-<td>Spirit&nbsp;Air&nbsp;Lines</td>
-</tr>
-<tr class="odd">
-<td>WN</td>
-<td>Southwest&nbsp;Airlines&nbsp;Co.</td>
-</tr>
-<tr class="even">
-<td>DL</td>
-<td>Delta&nbsp;Air&nbsp;Lines&nbsp;Inc.</td>
-</tr>
-<tr class="odd">
-<td>EV</td>
-<td>Atlantic&nbsp;Southeast&nbsp;Airlines</td>
-</tr>
-<tr class="even">
-<td>HA</td>
-<td>Hawaiian&nbsp;Airlines&nbsp;Inc.</td>
-</tr>
-<tr class="odd">
-<td>MQ</td>
-<td>American&nbsp;Eagle&nbsp;Airlines&nbsp;Inc.</td>
-</tr>
-<tr class="even">
-<td>VX</td>
-<td>Virgin&nbsp;America</td>
-</tr>
-</tbody>
-</table>
+<p>Which airline carriers are most likely to have delayed flights? Are flights more likely to be delayed during certain months? Are there certain airport destinations that have a higher rate of delays from Baltimore compared to other destinations?</p>
+</section>
+<section id="analysis" class="level1">
+<h1>Analysis</h1>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(flights_bwi)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>  X YEAR MONTH DAY DAY_OF_WEEK AIRLINE FLIGHT_NUMBER TAIL_NUMBER ORIGIN_AIRPORT
-1 1 2015     1   1           4      AA           233      N3BEAA            BWI
-2 2 2015     1   1           4      DL          1937      N905DA            BWI
-3 3 2015     1   1           4      DL          2234      N970DL            BWI
-4 4 2015     1   1           4      NK           969      N516NK            BWI
-5 5 2015     1   1           4      US          1943      N508AY            BWI
-6 6 2015     1   1           4      NK           301      N626NK            BWI
-  DESTINATION_AIRPORT SCHEDULED_DEPARTURE DEPARTURE_TIME DEPARTURE_DELAY
-1                 MIA                 600            643              43
-2                 DTW                 600            551              -9
-3                 MSP                 625            709              44
-4                 ORD                 625            619              -6
-5                 CLT                 640            637              -3
-6                 FLL                 645            649               4
-  TAXI_OUT WHEELS_OFF SCHEDULED_TIME ELAPSED_TIME AIR_TIME DISTANCE WHEELS_ON
-1       21        704            163          151      124      946       908
-2       18        609            102           92       69      409       718
-3       10        719            171          163      149      936       848
-4       12        631            129          139      116      622       727
-5       22        659             94           95       67      361       806
-6       11        700            157          142      125      925       905
-  TAXI_IN SCHEDULED_ARRIVAL ARRIVAL_TIME ARRIVAL_DELAY DIVERTED CANCELLED
-1       6               843          914            31        0         0
-2       5               742          723           -19        0         0
-3       4               816          852            36        0         0
-4      11               734          738             4        0         0
-5       6               814          812            -2        0         0
-6       6               922          911           -11        0         0
-  CANCELLATION_REASON AIR_SYSTEM_DELAY SECURITY_DELAY AIRLINE_DELAY
-1                                    0              0            31
-2                                   NA             NA            NA
-3                                    0              0            36
-4                                   NA             NA            NA
-5                                   NA             NA            NA
-6                                   NA             NA            NA
-  LATE_AIRCRAFT_DELAY WEATHER_DELAY
-1                   0             0
-2                  NA            NA
-3                   0             0
-4                  NA            NA
-5                  NA            NA
-6                  NA            NA</code></pre>
-</div>
-<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>flights_bwi <span class="sc">%&gt;%</span> </span>
-<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(DEPARTURE_DELAY <span class="sc">&gt;</span> <span class="dv">0</span>) <span class="sc">%&gt;%</span> </span>
-<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>  nrow <span class="sc">/</span> <span class="fu">nrow</span>(flights_bwi)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>flights_bwi <span class="sc">%&gt;%</span> </span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(DEPARTURE_DELAY <span class="sc">&gt;</span> <span class="dv">0</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>  nrow <span class="sc">/</span> <span class="fu">nrow</span>(flights_bwi)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] 0.4863672</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>flights_bwi <span class="sc">%&gt;%</span> </span>
-<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(DEPARTURE_DELAY <span class="sc">&gt;</span> <span class="dv">15</span>) <span class="sc">%&gt;%</span> </span>
-<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>  nrow <span class="sc">/</span> <span class="fu">nrow</span>(flights_bwi)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>delayed <span class="ot">&lt;-</span> flights_bwi <span class="sc">%&gt;%</span> </span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(DEPARTURE_DELAY <span class="sc">&gt;</span> <span class="dv">15</span>) </span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a><span class="fu">nrow</span>(delayed) <span class="sc">/</span> <span class="fu">nrow</span>(flights_bwi)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] 0.2330534</code></pre>
 </div>
 </div>
-<p>48.6% of flights out of BWI in 2015 were delayed. 23.3% of flights out of BWI were delayed more than 15 minutes.</p>
+<p>48.6% of flights out of BWI in 2015 were delayed. However, the Federal Aviation Administration defines a delay as a flight that leaves 15 or more minutes late. <span class="citation" data-cites="delay_def">(<a href="#ref-delay_def" role="doc-biblioref">Administration, n.d.</a>)</span> Using this definition, 23.3% of flights out of BWI were delayed.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>flights_bwi <span class="sc">%&gt;%</span> </span>
-<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(DEPARTURE_DELAY)) <span class="sc">+</span></span>
-<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_histogram</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>delay_by_airline <span class="ot">&lt;-</span> flights_bwi <span class="sc">%&gt;%</span> </span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">delay_status =</span> <span class="fu">ifelse</span>(DEPARTURE_DELAY <span class="sc">&gt;</span> <span class="dv">15</span>, <span class="dv">1</span>, <span class="dv">0</span>)) <span class="sc">%&gt;%</span> </span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(<span class="sc">!</span><span class="fu">is.na</span>(delay_status)) </span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>summarized_delays <span class="ot">&lt;-</span> delay_by_airline <span class="sc">%&gt;%</span> </span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(AIRLINE) <span class="sc">%&gt;%</span> </span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarize</span>(<span class="at">num_delayed_flights =</span> <span class="fu">sum</span>(delay_status,<span class="at">na.rm =</span> T), <span class="at">total_flights =</span> <span class="fu">n</span>(), <span class="at">proportion_of_flights_delayed =</span> <span class="fu">sum</span>(delay_status, <span class="at">na.rm =</span> T)<span class="sc">/</span><span class="fu">n</span>()) <span class="sc">%&gt;%</span> </span>
+<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">arrange</span>(<span class="sc">-</span>proportion_of_flights_delayed)</span>
+<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a>summarized_delays</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 11 × 4
+   AIRLINE num_delayed_flights total_flights proportion_of_flights_delayed
+   &lt;chr&gt;                 &lt;dbl&gt;         &lt;int&gt;                         &lt;dbl&gt;
+ 1 OO                        1             1                         1    
+ 2 NK                      786          2776                         0.283
+ 3 WN                    16404         62887                         0.261
+ 4 MQ                      251          1052                         0.239
+ 5 UA                      620          2966                         0.209
+ 6 EV                       56           341                         0.164
+ 7 AA                      624          4075                         0.153
+ 8 AS                       60           414                         0.145
+ 9 B6                      220          1734                         0.127
+10 DL                      809          6484                         0.125
+11 US                      230          1870                         0.123</code></pre>
+</div>
+</div>
+<p>This table sorts the airlines by proportion of flights delayed from most to least.</p>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Skywest only has one observation in this dataset and it was a delay, so I will remove it from analysis on which airlines have the highest rate of delay since it skews the results.</p>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>delay_by_airline <span class="ot">&lt;-</span> delay_by_airline <span class="sc">%&gt;%</span> </span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(AIRLINE <span class="sc">!=</span> <span class="st">"OO"</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">AIRLINE =</span> <span class="fu">reorder</span>(AIRLINE, <span class="sc">-</span>delay_status))</span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(delay_by_airline, <span class="fu">aes</span>(<span class="at">fill =</span> <span class="fu">as.factor</span>(delay_status), <span class="at">y =</span> <span class="fu">length</span>(delay_status), <span class="at">x =</span> AIRLINE)) <span class="sc">+</span> </span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_bar</span>(<span class="at">position=</span><span class="st">"fill"</span>, <span class="at">stat=</span><span class="st">"identity"</span>) <span class="sc">+</span> <span class="fu">ggtitle</span>(<span class="st">"Proportion of Flights Delayed out of BWI by Airline"</span>) <span class="sc">+</span> </span>
+<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">xlab</span>(<span class="st">"Airline"</span>) <span class="sc">+</span> </span>
+<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ylab</span>(<span class="st">"Proportion of Flights Delayed"</span>) <span class="sc">+</span> </span>
+<span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">guides</span>(<span class="at">fill=</span><span class="fu">guide_legend</span>(<span class="at">title=</span><span class="st">"Delay Status"</span>)) <span class="sc">+</span> </span>
+<span id="cb10-10"><a href="#cb10-10" aria-hidden="true" tabindex="-1"></a><span class="fu">scale_fill_manual</span>(<span class="at">labels =</span> <span class="fu">c</span>(<span class="st">"No"</span>, <span class="st">"Yes"</span>), <span class="at">values =</span> <span class="fu">c</span>(<span class="st">"green4"</span>, <span class="st">"orange2"</span>)) <span class="sc">+</span> </span>
+<span id="cb10-11"><a href="#cb10-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">title =</span> <span class="fu">element_text</span>(<span class="at">family =</span> <span class="st">"Optima"</span>), <span class="at">legend.text =</span> <span class="fu">element_text</span>(<span class="at">family =</span> <span class="st">"Optima"</span>), <span class="at">axis.text.x =</span> <span class="fu">element_text</span>(<span class="at">family =</span> <span class="st">"Optima"</span>), <span class="at">axis.text.y =</span> <span class="fu">element_text</span>(<span class="at">family =</span> <span class="st">"Optima"</span>)) <span class="sc">+</span> </span>
+<span id="cb10-12"><a href="#cb10-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">subtitle =</span> <span class="fu">str_wrap</span>(<span class="st">"Spirit Airlines and Southwest Airlines have the highest proportion of delayed flights while US Airways has the lowest"</span>), <span class="at">caption =</span> <span class="st">"Figure 1: Airlines ranked by delay status"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="analysis_files/figure-html/unnamed-chunk-7-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>summarized_delays <span class="sc">%&gt;%</span> </span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(AIRLINE <span class="sc">!=</span> <span class="st">"OO"</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> <span class="fu">reorder</span>(AIRLINE,<span class="sc">-</span>total_flights),<span class="at">y =</span> total_flights)) <span class="sc">+</span></span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_bar</span>(<span class="at">stat =</span> <span class="st">"identity"</span>, <span class="at">fill =</span> <span class="st">"green4"</span>) <span class="sc">+</span> <span class="fu">ylab</span>(<span class="st">"Total Number of Flights"</span>) <span class="sc">+</span> <span class="fu">xlab</span>(<span class="st">"Airline"</span>) <span class="sc">+</span> <span class="fu">ggtitle</span>(<span class="st">"Frequency of Flights out of BWI by Airline"</span>) <span class="sc">+</span></span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">title =</span> <span class="fu">element_text</span>(<span class="at">family =</span> <span class="st">"Optima"</span>), <span class="at">legend.text =</span> <span class="fu">element_text</span>(<span class="at">family =</span> <span class="st">"Optima"</span>), <span class="at">axis.text.x =</span> <span class="fu">element_text</span>(<span class="at">family =</span> <span class="st">"Optima"</span>), <span class="at">axis.text.y =</span> <span class="fu">element_text</span>(<span class="at">family =</span> <span class="st">"Optima"</span>)) <span class="sc">+</span> <span class="fu">labs</span>(<span class="at">subtitle =</span> <span class="st">"Southwest operated far more flights out of BWI in 2015 compared to other airlines"</span>, <span class="at">caption =</span> <span class="st">"Figure 2: Airlines ranked by number of total flights"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="analysis_files/figure-html/unnamed-chunk-8-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>Comparing Figure 1 and Figure 2, we see that Southwest Airlines has both a high proportion of delayed flights but also a large number of flights operating out of BWI. The information from Figure 2 may provide insight to better understand Figure 1. For example, is possible that since BWI is a Southwest hub, this influences the destinations it flies to which could have implications on delays that differ from the other airlines.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>delay_by_airline <span class="sc">%&gt;%</span> </span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(MONTH) <span class="sc">%&gt;%</span> </span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">MONTH =</span> <span class="fu">as.factor</span>(MONTH)) <span class="sc">%&gt;%</span> </span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarize</span>(<span class="at">proportion_delayed =</span> <span class="fu">sum</span>(delay_status)<span class="sc">/</span><span class="fu">length</span>(MONTH)) <span class="sc">%&gt;%</span> </span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> MONTH, <span class="at">y =</span> proportion_delayed, <span class="at">group =</span> <span class="dv">1</span>)) <span class="sc">+</span></span>
+<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_path</span>(<span class="at">linetype =</span> <span class="st">"dashed"</span>, <span class="at">color =</span> <span class="st">"green4"</span>) <span class="sc">+</span></span>
+<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">color =</span> <span class="st">"green4"</span>) <span class="sc">+</span> </span>
+<span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggtitle</span> (<span class="st">"Proportion of Flights out of BWI Delayed by Month"</span>) <span class="sc">+</span> </span>
+<span id="cb12-9"><a href="#cb12-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ylab</span>(<span class="st">"Proportion Delayed"</span>) <span class="sc">+</span> <span class="fu">xlab</span>(<span class="st">"Month"</span>) <span class="sc">+</span></span>
+<span id="cb12-10"><a href="#cb12-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">title =</span> <span class="fu">element_text</span>(<span class="at">family =</span> <span class="st">"Optima"</span>), <span class="at">legend.text =</span> <span class="fu">element_text</span>(<span class="at">family =</span> <span class="st">"Optima"</span>), <span class="at">axis.text.x =</span> <span class="fu">element_text</span>(<span class="at">family =</span> <span class="st">"Optima"</span>), <span class="at">axis.text.y =</span> <span class="fu">element_text</span>(<span class="at">family =</span> <span class="st">"Optima"</span>)) <span class="sc">+</span> <span class="fu">labs</span>(<span class="at">subtitle =</span> <span class="st">"June and July saw the highest rates of delays out BWI in 2015"</span>, <span class="at">caption =</span> <span class="st">"Figure 3: Delay rates by month"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="analysis_files/figure-html/unnamed-chunk-9-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>This line graph shows the trends in delays throughout the year. The highest rate of delay occurred during the summer in June and July (perhaps due to an increase in summer traveling or vacations), while the lowest rates were in April and November. Moderate delay rate occurred from December to March, which was perhaps due to more severe weather events such as snow during the Winter months.</p>
+<div class="callout callout-style-default callout-caution callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Caution
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>This dataset does not include any observations on flights out of BWI during October 2015 and there is no documentation about this from the data source.</p>
+</div>
+</div>
+<p>To further explore that hypothesis, I made a plot showing the proportion of delays each month that were due specifically to weather.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>delay_by_airline <span class="sc">%&gt;%</span> </span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(delay_status <span class="sc">==</span> <span class="dv">1</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">weather_delay_status =</span> <span class="fu">case_when</span>(</span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a>    WEATHER_DELAY <span class="sc">&lt;</span> <span class="dv">15</span> <span class="sc">~</span> <span class="dv">0</span>,</span>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a>    WEATHER_DELAY <span class="sc">&gt;=</span> <span class="dv">15</span> <span class="sc">~</span> <span class="dv">1</span>,</span>
+<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a>    <span class="fu">is.na</span>(WEATHER_DELAY) <span class="sc">~</span> <span class="dv">0</span></span>
+<span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a>  )) <span class="sc">%&gt;%</span> </span>
+<span id="cb13-8"><a href="#cb13-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(MONTH) <span class="sc">%&gt;%</span> </span>
+<span id="cb13-9"><a href="#cb13-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">MONTH =</span> <span class="fu">as.factor</span>(MONTH)) <span class="sc">%&gt;%</span> </span>
+<span id="cb13-10"><a href="#cb13-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarize</span>(<span class="at">proportion_delayed =</span> <span class="fu">sum</span>(weather_delay_status)<span class="sc">/</span><span class="fu">length</span>(MONTH)) <span class="sc">%&gt;%</span> </span>
+<span id="cb13-11"><a href="#cb13-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> MONTH, <span class="at">y =</span> proportion_delayed, <span class="at">group =</span> <span class="dv">1</span>)) <span class="sc">+</span></span>
+<span id="cb13-12"><a href="#cb13-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_path</span>(<span class="at">linetype =</span> <span class="st">"dashed"</span>, <span class="at">color =</span> <span class="st">"green4"</span>) <span class="sc">+</span></span>
+<span id="cb13-13"><a href="#cb13-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">color =</span> <span class="st">"green4"</span>) <span class="sc">+</span> </span>
+<span id="cb13-14"><a href="#cb13-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggtitle</span> (<span class="st">"Proportion of Flights out of BWI Delayed by Month"</span>) <span class="sc">+</span> </span>
+<span id="cb13-15"><a href="#cb13-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ylab</span>(<span class="st">"Proportion Delayed"</span>) <span class="sc">+</span> <span class="fu">xlab</span>(<span class="st">"Month"</span>) <span class="sc">+</span></span>
+<span id="cb13-16"><a href="#cb13-16" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">title =</span> <span class="fu">element_text</span>(<span class="at">family =</span> <span class="st">"Optima"</span>), <span class="at">legend.text =</span> <span class="fu">element_text</span>(<span class="at">family =</span> <span class="st">"Optima"</span>), <span class="at">axis.text.x =</span> <span class="fu">element_text</span>(<span class="at">family =</span> <span class="st">"Optima"</span>), <span class="at">axis.text.y =</span> <span class="fu">element_text</span>(<span class="at">family =</span> <span class="st">"Optima"</span>)) <span class="sc">+</span> <span class="fu">labs</span>(<span class="at">subtitle =</span> <span class="st">"June and July saw the highest rates of delays out BWI in 2015"</span>, <span class="at">caption =</span> <span class="st">"Figure 3: Delay rates by month"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="analysis_files/figure-html/unnamed-chunk-10-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>Interestingly, this graph shows that the month with the highest proportion delays being weather delays is June, so it seems that the delays in the Winter months may be due to a different cause.</p>
+<p>Lastly, I explored potential relationship between length or delay and length of outgoing flight. To do so, I split up the delayed flights into 4 categories: a short delay of 15-30 minutes, a short-moderate delay of 30 minutes to 1 hour, a moderate delay of 1 to 2 hours, and a long delay of 2+ hours. Faceting by these categories, I made a histograms to show the distribution of flight time.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>delay_by_airline <span class="sc">%&gt;%</span> </span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(delay_status <span class="sc">==</span> <span class="st">"1"</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">delay_category =</span> <span class="fu">case_when</span>(</span>
+<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a>    DEPARTURE_DELAY <span class="sc">&gt;</span> <span class="dv">15</span> <span class="sc">&amp;</span> DEPARTURE_DELAY <span class="sc">&lt;</span> <span class="dv">30</span> <span class="sc">~</span> <span class="st">"Short"</span>,</span>
+<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a>    DEPARTURE_DELAY <span class="sc">&gt;=</span> <span class="dv">30</span> <span class="sc">&amp;</span> DEPARTURE_DELAY <span class="sc">&lt;</span> <span class="dv">60</span> <span class="sc">~</span> <span class="st">"Short/Moderate"</span>,</span>
+<span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a>    DEPARTURE_DELAY <span class="sc">&gt;=</span> <span class="dv">60</span> <span class="sc">&amp;</span> DEPARTURE_DELAY <span class="sc">&lt;</span> <span class="dv">120</span> <span class="sc">~</span> <span class="st">"Moderate"</span>,</span>
+<span id="cb14-7"><a href="#cb14-7" aria-hidden="true" tabindex="-1"></a>    DEPARTURE_DELAY <span class="sc">&gt;=</span> <span class="dv">120</span> <span class="sc">~</span> <span class="st">"Long"</span></span>
+<span id="cb14-8"><a href="#cb14-8" aria-hidden="true" tabindex="-1"></a>  )) <span class="sc">%&gt;%</span> </span>
+<span id="cb14-9"><a href="#cb14-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">delay_category =</span> <span class="fu">factor</span>(delay_category, <span class="at">levels =</span> <span class="fu">c</span>(<span class="st">"Short"</span>, <span class="st">"Short/Moderate"</span>, <span class="st">"Moderate"</span>, <span class="st">"Long"</span>))) <span class="sc">%&gt;%</span> </span>
+<span id="cb14-10"><a href="#cb14-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> AIR_TIME, <span class="at">group =</span> delay_category)) <span class="sc">+</span></span>
+<span id="cb14-11"><a href="#cb14-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_histogram</span>(<span class="fu">aes</span>(<span class="at">y=</span> <span class="fu">stat</span>(width<span class="sc">*</span>density)), <span class="at">fill =</span> <span class="st">"green4"</span>) <span class="sc">+</span></span>
+<span id="cb14-12"><a href="#cb14-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">facet_wrap</span>(<span class="sc">~</span>delay_category) <span class="sc">+</span> <span class="fu">xlab</span>(<span class="st">"Air Time (Minutes)"</span>) <span class="sc">+</span> </span>
+<span id="cb14-13"><a href="#cb14-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ylab</span>(<span class="st">"Density"</span>) <span class="sc">+</span> </span>
+<span id="cb14-14"><a href="#cb14-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggtitle</span>(<span class="st">"Distribution of Flight Time Categorized by Length of Delay"</span>) <span class="sc">+</span> </span>
+<span id="cb14-15"><a href="#cb14-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">title =</span> <span class="fu">element_text</span>(<span class="at">family =</span> <span class="st">"Optima"</span>), <span class="at">legend.text =</span> <span class="fu">element_text</span>(<span class="at">family =</span> <span class="st">"Optima"</span>), <span class="at">axis.text.x =</span> <span class="fu">element_text</span>(<span class="at">family =</span> <span class="st">"Optima"</span>), <span class="at">axis.text.y =</span> <span class="fu">element_text</span>(<span class="at">family =</span> <span class="st">"Optima"</span>), <span class="at">strip.text.x =</span> <span class="fu">element_text</span>(<span class="at">family =</span> <span class="st">"Optima"</span>)) <span class="sc">+</span> <span class="fu">labs</span>(<span class="at">subtitle =</span> <span class="fu">str_wrap</span>(<span class="st">"Delayed flights with shorter delays had higher density of shorter flight times Short = 15-30 min delay, Short/Moderate = 30 min-1 hour delay,      Moderate = 1-2 hour delay, Long = 2+ hour delay"</span>, <span class="at">width =</span> <span class="dv">80</span>), <span class="at">caption =</span> <span class="st">"Figure 4: Distribution of flight time by length of delay"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning: `stat(width * density)` was deprecated in ggplot2 3.4.0.
+ℹ Please use `after_stat(width * density)` instead.</code></pre>
+</div>
 <div class="cell-output cell-output-stderr">
 <pre><code>`stat_bin()` using `bins = 30`. Pick better value with `binwidth`.</code></pre>
 </div>
 <div class="cell-output cell-output-stderr">
-<pre><code>Warning: Removed 1479 rows containing non-finite outside the scale range
+<pre><code>Warning: Removed 127 rows containing non-finite outside the scale range
 (`stat_bin()`).</code></pre>
 </div>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="analysis_files/figure-html/unnamed-chunk-6-1.png" class="img-fluid figure-img" width="672"></p>
+<p><img src="analysis_files/figure-html/unnamed-chunk-11-1.png" class="img-fluid figure-img" width="672"></p>
 </figure>
 </div>
 </div>
-<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>flights_bwi <span class="sc">%&gt;%</span> </span>
-<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(DEPARTURE_DELAY) <span class="sc">%&gt;%</span> </span>
-<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">max</span>(<span class="at">na.rm=</span>T) <span class="sc">/</span> <span class="dv">60</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>[1] 22.33333</code></pre>
 </div>
-</div>
-<p>By times of year - each month and then certain periods including thanksgiving and christmas</p>
+<p>We see that the distributions of flight time for the shorter delays are slightly more right skewed compared to the longer delays. This suggests that flights with shorter delays are more likely to be shorter flights. Perhaps a more informative way to explore this trend would be to reverse the conditional probability and look at the distribution of delay time based on flight time. However, making visual aids for this type of analysis is difficult because there are some observations with extremely high delay times that make constructing histograms difficult and/or not very informative. For this reason, splitting up delay times into categories as I did here helps account for that.</p>
+</section>
+<section id="summary" class="level1">
+<h1>Summary</h1>
+<p>Overall, there are definitely factors that influence delayed flights out of BWI. There are clearly trends in which airlines have more delays than others, with Southwest and Spirit being the airlines with the highest rates of delay out BWI. There is also a temporal relationship, and travelers should be prepared for a higher chance of flight delay in June and July compared to other times of year. There also seems to be an association between length of delay and length of flight, of the flights that were delayed. Among delayed flights, it seems that shorter delays were associated with shorter flights. For future analysis, it would be useful to further investigate why this dataset does not include data on October of 2015. It would also be useful to investigate the other causes of delay besides weather delay that were included in the dataset.</p>
+<section id="functions-used" class="level2">
+<h2 class="anchored" data-anchor-id="functions-used">Functions Used</h2>
+<p><strong>dplyr:</strong></p>
+<p>filter()<br>
+mutate()<br>
+group_by()<br>
+summarize()<br>
+arrange()<br>
+n()<br>
+case_when()<br>
+</p>
+<p><strong>ggplot:</strong> ggplot()<br>
+geom_bar()<br>
+geom_path()<br>
+geom_point()<br>
+geom_histogram()<br>
+facet_wrap()<br>
+theme()<br>
+</p>
+</section>
+</section>
+<section id="references" class="level1">
+
+
 
 
 </section>
 
-</main> <!-- /main -->
+<div id="quarto-appendix" class="default"><section class="quarto-appendix-contents" role="doc-bibliography" id="quarto-bibliography"><h2 class="anchored quarto-appendix-heading">References</h2><div id="refs" class="references csl-bib-body hanging-indent" data-entry-spacing="0" role="list">
+<div id="ref-delay_def" class="csl-entry" role="listitem">
+Administration, Federal Aviation. n.d. <em>Types of Delay</em>. <a href="https://aspm.faa.gov/aspmhelp/index/Types_of_Delay.html">https://aspm.faa.gov/aspmhelp/index/Types_of_Delay.html</a>.
+</div>
+<div id="ref-image" class="csl-entry" role="listitem">
+Airport, BWI. 2024. <em>Air Service Route Map</em>. <a href="https://bwiairport.com/flying-with-us/flights/bwi-route-map/">https://bwiairport.com/flying-with-us/flights/bwi-route-map/</a>.
+</div>
+<div id="ref-airport_codes" class="csl-entry" role="listitem">
+NationsOnline. n.d. <em>IATA 3-Letter Codes of Airports</em>. <a href="https://www.nationsonline.org/oneworld/IATA_Codes/airport_code_list.htm">https://www.nationsonline.org/oneworld/IATA_Codes/airport_code_list.htm</a>.
+</div>
+<div id="ref-Kaggle_dataset" class="csl-entry" role="listitem">
+Transportation, Department of. 2016. <em>2015 Flight Delays and Cancellations</em>. <a href="https://www.kaggle.com/datasets/usdot/flight-delays?select=flights.csv">https://www.kaggle.com/datasets/usdot/flight-delays?select=flights.csv</a>.
+</div>
+</div></section></div></main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">
 window.document.addEventListener("DOMContentLoaded", function (event) {
   const toggleBodyColorMode = (bsSheetEl) => {

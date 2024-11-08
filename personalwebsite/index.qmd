@@ -4,4 +4,8 @@ title: "Welcome!"
 
 Hi! My name is Julia Martin and I am a first year ScM student in Biostatistics at Johns Hopkins. I'm from California and one of my favorite hobbies is biking. Here is a picture of me biking in Yosemite from the summer!
 
-![](IMG_5003.JPEG){width="485"}  
+::: {layout-ncol="2"}
+![](Horizontal%202.jpg){width="396"}
+
+![](IMG_5003.JPEG){width="333"}
+:::
